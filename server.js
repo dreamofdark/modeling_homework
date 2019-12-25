@@ -14,7 +14,8 @@ expressApp.use(express.static(rootDir));
 const port = 3000;
 
 expressApp.listen(port, () => {
-    console.log('Server starte');
+    console.log('Server started');
+    console.log('http://localhost:3000/');
 });
 
 
