@@ -104,7 +104,7 @@ const dataBaseSimulatuion = (THREADS, RPS, SEED, SIMTIME) => {
 
     return [
         state.sizeSeries.average(),
-        state.durationSeries.average()
+        state.sizeSeries.sum()
     ];
 
 };
@@ -112,7 +112,7 @@ const dataBaseSimulatuion = (THREADS, RPS, SEED, SIMTIME) => {
 const start = () => {
     const root = document.querySelector('.root');
 
-    const res = dataBaseSimulatuion(3, 100, 1234, 4_000);
+    const res = dataBaseSimulatuion(3, 10, 1234, 4_000);
     // Object.values(res).forEach(key => {
     //     root.insertAdjacentText('afterend', res[key].join('________'));
     //     root.insertAdjacentHTML('afterend', [key, 'Ср. продолжительность', 'Ср. отклонение'].join('___') + '<br>');
