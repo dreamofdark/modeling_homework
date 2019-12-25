@@ -52,8 +52,14 @@ const dataBaseSimulatuion = (THREADS, RPS, SEED, SIMTIME) => {
         }
     };
 
+    // const stats = {
+    //     GET: new Sim.Population("GET"),
+    //     POST: new Sim.Population("POST"),
+    //     UPDATE: new Sim.Population("UPDATE"),
+    //     DELETE: new Sim.Population("DELETE"),
+    // };
 
-    const stats = new Sim.Population("Waiting at Intersection");
+    const state = new Sim.Population("ppp");
 
     const TrafficController = {
         start: function () {
@@ -65,18 +71,17 @@ const dataBaseSimulatuion = (THREADS, RPS, SEED, SIMTIME) => {
             firstEvent.event.fire();
         },
         generateTraffic: function (request) {
-            stats.enter(this.time());
+            state.enter(this.time());
             // sim.log(request.name);
 
             this.queueEvent(request.event).done( function () {
                 const arrivedAt = this.callbackData;
                 // STATS: record that vehicle has left the intersection
 
-                stats.leave(arrivedAt, this.time());
+                state.leave(arrivedAt, this.time());
                 sim.log(request.name + " (arrived at " + (arrivedAt).toFixed(6) + ")");
             }).setData(this.time());
 
-            console.log(request.duration);
             this.setTimer(request.duration).done(request.event.fire, request.event);
 
             const { next } = requests;
@@ -90,8 +95,16 @@ const dataBaseSimulatuion = (THREADS, RPS, SEED, SIMTIME) => {
 
     sim.simulate(SIMTIME);
 
-    return [stats.durationSeries.average(),
-        stats.durationSeries.deviation()
+    // return {
+    //     GET: [stats['GET'].durationSeries.average(), stats['GET'].durationSeries.deviation()],
+    //     POST: [stats['POST'].durationSeries.average(), stats['POST'].durationSeries.deviation()],
+    //     UPDATE: [stats['UPDATE'].durationSeries.average(), stats['UPDATE'].durationSeries.deviation()],
+    //     DELETE: [stats['DELETE'].durationSeries.average(), stats['DELETE'].durationSeries.deviation()],
+    // };
+
+    return [
+        state.sizeSeries.average(),
+        state.durationSeries.average()
     ];
 
 };
@@ -99,8 +112,13 @@ const dataBaseSimulatuion = (THREADS, RPS, SEED, SIMTIME) => {
 const start = () => {
     const root = document.querySelector('.root');
 
-    const res = dataBaseSimulatuion(3, 10, 1234, 100_000);
+    const res = dataBaseSimulatuion(3, 100, 1234, 4_000);
+    // Object.values(res).forEach(key => {
+    //     root.insertAdjacentText('afterend', res[key].join('________'));
+    //     root.insertAdjacentHTML('afterend', [key, 'Ср. продолжительность', 'Ср. отклонение'].join('___') + '<br>');
+    // })
+    console.log(res);
     root.insertAdjacentText('afterend', res.join('________'));
-    root.insertAdjacentText('afterend', ['Ср. продолжительность', 'Ср. отклонение'].join('___'));
+    root.insertAdjacentHTML('afterend', ['Ср. продолжительность', 'Суммарное время запросов'].join('___') + '<br>');
 };
 
